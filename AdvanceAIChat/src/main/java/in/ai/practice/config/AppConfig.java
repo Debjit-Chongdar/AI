@@ -1,4 +1,4 @@
-package in.ai.practice;
+package in.ai.practice.config;
 
 import in.ai.practice.advisor.ShowContextAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
