@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
-public class ChatController {
+@RequestMapping("/prompt")
+public class PromptChatController {
 
     private final ChatClient chatClient;
 
     @Value("classpath:/system/HRSystemMsg.st")
     Resource systemHRSystemMsg;
 
-    public ChatController(ChatClient.Builder builder) {
+    public PromptChatController(ChatClient.Builder builder) {
         //we can add defaultUser msg, defaultSystem msg
         this.chatClient = builder.defaultUser("How can you help me?").build();
     }
 
-    @GetMapping("/chat")
+    @GetMapping("/chat-resource")
     public String chatResponse(@RequestParam("message") String message){
         String systemPrompt = """
                 You are a HR agent, answer professionally which is comes under your department
@@ -30,7 +30,7 @@ public class ChatController {
         return chatClient.prompt().system(systemPrompt).user(message).call().content();
     }
 
-    @GetMapping("/hr/chat")
+    @GetMapping("/chat")
     public String hrSystemChat(@RequestParam("message") String message){
         return chatClient.prompt().system(systemHRSystemMsg).user(message).call().content();
     }

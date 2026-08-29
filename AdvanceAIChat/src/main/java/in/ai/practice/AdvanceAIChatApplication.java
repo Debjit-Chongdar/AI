@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PromptAIChatApplication {
+public class AdvanceAIChatApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PromptAIChatApplication.class, args);
+		SpringApplication.run(AdvanceAIChatApplication.class, args);
 	}
 
 }
