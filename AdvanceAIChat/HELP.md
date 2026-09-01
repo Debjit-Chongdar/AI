@@ -60,3 +60,7 @@ Application created: https://start.spring.io/
 - **user()**
 - **options()**
 - **tool()**
+
+## DB Console 
+http://localhost:8080/h2-console
+SELECT * FROM SPRING_AI_CHAT_MEMORY;

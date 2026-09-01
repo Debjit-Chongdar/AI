@@ -2,12 +2,20 @@ package in.ai.practice.config;
 
 import in.ai.practice.advisor.ShowContextAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.ChatMemoryRepository;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class AppConfig {
@@ -43,6 +51,33 @@ public class AppConfig {
     public ChatClient contextChatClient(OllamaChatModel chatModel) {
         return ChatClient.builder(chatModel)
                 .defaultAdvisors(new ShowContextAdvisor())
+                .build();
+    }
+
+    @Bean("inMemoryChatClient")
+    public ChatClient getInMemoryChatClient(OllamaChatModel chatModel, ChatMemory  chatMemory) {
+        MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
+        return ChatClient.builder(chatModel)
+                .defaultAdvisors(List.of(new SimpleLoggerAdvisor(), memoryAdvisor))
+                .build();
+    }
+
+    //this chatMemory will also impact getInMemoryChatClient bean
+    @Bean("jdbcChatMemory")
+    public ChatMemory chatMemory(JdbcChatMemoryRepository jdbcChatMemoryRepository){
+        return MessageWindowChatMemory.builder()
+                .chatMemoryRepository(jdbcChatMemoryRepository)
+                //max last 10 chat will be kept with a single conversationId
+                //default value is 20
+                .maxMessages(10)//it will increase token usage
+                .build();
+    }
+
+    @Bean("dbStoreChatClient")
+    public ChatClient getDBStoreChatClient(OllamaChatModel chatModel, @Qualifier("jdbcChatMemory") ChatMemory  chatMemory) {
+        MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
+        return ChatClient.builder(chatModel)
+                .defaultAdvisors(List.of(new SimpleLoggerAdvisor(), memoryAdvisor))
                 .build();
     }
 }
