@@ -1,0 +1,45 @@
+# Human Resources Handbook (Test Document)
+
+## Section 1: Company Policies
+- Equal Employment Opportunity: The company provides equal opportunities regardless of race, gender, age, or disability.
+- Anti-Harassment Policy: Zero tolerance for harassment in any form.
+- Code of Conduct: Employees must maintain professionalism and integrity at all times.
+
+## Section 2: Leave & Attendance
+- Annual Leave: 20 days per year, accrued monthly.
+- Sick Leave: 10 days per year, requires medical certificate for absences longer than 3 days.
+- Attendance Policy: Employees must log working hours via the HR portal.
+
+## Section 3: Compensation & Benefits
+- Payroll: Salaries are processed on the 30th of each month.
+- Health Insurance: Coverage includes medical, dental, and vision.
+- Retirement Plan: Company contributes 5% of base salary to provident fund.
+
+## Section 4: Performance Management
+- Appraisals: Conducted annually in December.
+- Promotions: Based on performance ratings and business needs.
+- Training: Employees are encouraged to attend at least 2 skill development sessions per year.
+
+## Section 5: Employee Relations
+- Grievance Handling: Employees may raise concerns via HR helpdesk.
+- Disciplinary Action: Progressive discipline policy (verbal warning → written warning → termination).
+- Exit Process: Includes clearance, final settlement, and exit interview.
+
+## Section 6: Safety & Compliance
+- Workplace Safety: Employees must follow safety protocols and report hazards.
+- Compliance: Adherence to labor laws and data protection regulations.
+- Confidentiality: Sensitive company information must not be shared externally.
+
+---
+
+### Sample Employee Guidelines
+1. Dress Code: Business casual from Monday to Thursday, casual on Friday.
+2. Remote Work: Allowed up to 2 days per week with manager approval.
+3. Travel Policy: Expenses reimbursed within 15 days of submission.
+
+---
+
+### Example Forms
+- Leave Application Form
+- Expense Reimbursement Form
+- Performance Review Template
