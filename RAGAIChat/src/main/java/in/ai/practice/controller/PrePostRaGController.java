@@ -11,25 +11,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import static org.springframework.ai.chat.memory.ChatMemory.CONVERSATION_ID;
 
 @Controller
-@RequestMapping("/rag/advisor")
-public class RagAdvisorChatController {
+@RequestMapping("/advance")
+public class PrePostRaGController {
 
-    private final ChatClient ragChatClient;
+    private final ChatClient prePostChatClient;
 
-    public RagAdvisorChatController(@Qualifier("ragChatClient") ChatClient ragChatClient) {
-        this.ragChatClient = ragChatClient;
+    public PrePostRaGController(@Qualifier("prePostRAGChatClient") ChatClient prePostChatClient) {
+        this.prePostChatClient = prePostChatClient;
     }
 
     @GetMapping("/chat")
     public ResponseEntity<String> chat(
             @RequestParam String message,
-            @RequestParam(required = false,defaultValue = "default") String conversationId
-    ) {
-        String output =  ragChatClient.prompt()
+            @RequestParam(defaultValue = "default") String conversationId) {
+        String output = prePostChatClient.prompt()
                 .advisors(advisorSpec -> advisorSpec.param(CONVERSATION_ID, conversationId))
-                .user(message)
-                .call()
-                .content();
+                .user(message).call().content();
         return ResponseEntity.ok(output);
     }
 }

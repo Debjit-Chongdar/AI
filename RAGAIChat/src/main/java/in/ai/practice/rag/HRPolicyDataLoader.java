@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class HRPolicyDataLoader {
     private final VectorStore vectorStore;
-    @Value("classpath:/pdf/HR-Handbook.pdf")
+    @Value("classpath:/pdf/HR_Handbook.pdf")
     private Resource pdfFile;
 
     public HRPolicyDataLoader(VectorStore vectorStore) {

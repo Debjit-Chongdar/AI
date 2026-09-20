@@ -2,6 +2,7 @@ package in.ai.practice.config;
 
 import in.ai.practice.client.TavilyApiService;
 import in.ai.practice.rag.HRPolicyDataLoader;
+import in.ai.practice.rag.MaskingSensitiveInfo;
 import in.ai.practice.util.WebSearchRetriever;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -11,6 +12,9 @@ import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.postretrieval.document.DocumentPostProcessor;
+import org.springframework.ai.rag.preretrieval.query.transformation.QueryTransformer;
+import org.springframework.ai.rag.preretrieval.query.transformation.TranslationQueryTransformer;
 import org.springframework.ai.rag.retrieval.search.DocumentRetriever;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -54,8 +58,8 @@ public class AppConfig {
         return new HRPolicyDataLoader(vectorStore);
     }
 
-    // this advisor will handle SearchRequest within the Vector Store
-    @Bean(name = "retrievalAugmentationAdvisor")
+    // this advisor will handle SearchRequest within the Vector Store & concatenate the text
+    @Bean(name = "ragAdvisor")
     public RetrievalAugmentationAdvisor  retrievalAugmentationAdvisor(VectorStore vectorStore) {
         DocumentRetriever documentRetriever = VectorStoreDocumentRetriever.builder()
                 .vectorStore(vectorStore)
@@ -67,19 +71,30 @@ public class AppConfig {
              //   .documentJoiner(new ConcatenationDocumentJoiner())  -- this is default impl, no need to mention additionally
                 .build();
     }
-    // Chat client with Vector store search data (RAG with stored data)
-    @Bean(name = "advisorChatClient")
-    public ChatClient advisorChatClient(OllamaChatModel chatModel,
-                                        @Qualifier("jdbcChatMemory") ChatMemory  chatMemory,
-                                        @Qualifier("retrievalAugmentationAdvisor") RetrievalAugmentationAdvisor retrievalAugmentationAdvisor) {
-        MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
-        return ChatClient.builder(chatModel)
-                .defaultAdvisors(List.of(new SimpleLoggerAdvisor(), memoryAdvisor, retrievalAugmentationAdvisor))
+
+    //PreRetrieval & Post Retrieval RAG Advisor
+    @Bean(name = "prePostRAGAdvisor")
+    public RetrievalAugmentationAdvisor prePostRAGAdvisor(VectorStore vectorStore, ChatClient.Builder chatClientBuilder) {
+        DocumentRetriever documentRetriever = VectorStoreDocumentRetriever
+                .builder()
+                .vectorStore(vectorStore)
+                .topK(3).similarityThreshold(0.5)
+                .build();
+        QueryTransformer languageTransformerToEnglish = TranslationQueryTransformer
+                .builder()
+                .chatClientBuilder(chatClientBuilder)
+                .targetLanguage("English")
+                .build();
+        DocumentPostProcessor documentPostProcessor = new MaskingSensitiveInfo();
+        return RetrievalAugmentationAdvisor.builder()
+                .queryTransformers(languageTransformerToEnglish) // PRE Retrieval (language transformer)
+                .documentRetriever(documentRetriever)
+                .documentPostProcessors(documentPostProcessor) // Post Retrieval (masking sensitive info before send to AI)
                 .build();
     }
 
     //WebSearch RAG advisor will get the data from WeB
-    @Bean("webSearchRetrievalAugmentationAdvisor")
+    @Bean("webSearchRAGAdvisor")
     public RetrievalAugmentationAdvisor  webSearchAugmentationAdvisor() {
         DocumentRetriever documentRetriever = new WebSearchRetriever(3, new TavilyApiService());
         return RetrievalAugmentationAdvisor
@@ -88,11 +103,33 @@ public class AppConfig {
                 .build();
     }
 
+    // Chat client with Vector store search data (RAG with stored data)
+    @Bean(name = "ragChatClient")
+    public ChatClient advisorChatClient(OllamaChatModel chatModel,
+                                        @Qualifier("jdbcChatMemory") ChatMemory  chatMemory,
+                                        @Qualifier("ragAdvisor") RetrievalAugmentationAdvisor retrievalAugmentationAdvisor) {
+        MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
+        return ChatClient.builder(chatModel)
+                .defaultAdvisors(List.of(new SimpleLoggerAdvisor(), memoryAdvisor, retrievalAugmentationAdvisor))
+                .build();
+    }
+
+    //Chat Client with Pre Post RAG Advisor
+    @Bean(name = "prePostRAGChatClient")
+    public ChatClient prePostRAGChatClient(OllamaChatModel chatModel,
+                                           @Qualifier("jdbcChatMemory") ChatMemory  chatMemory,
+                                           @Qualifier("prePostRAGAdvisor") RetrievalAugmentationAdvisor retrievalAugmentationAdvisor) {
+        MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
+        return ChatClient.builder(chatModel)
+                .defaultAdvisors(List.of(new SimpleLoggerAdvisor(), memoryAdvisor, retrievalAugmentationAdvisor))
+                .build();
+    }
+
     // Chat client with Web search data (RAG with web data)
     @Bean(name = "webSearchRagChatClient")
     public ChatClient webSearchRagChatClient(OllamaChatModel chatModel,
                                         @Qualifier("jdbcChatMemory") ChatMemory  chatMemory,
-                                        @Qualifier("webSearchRetrievalAugmentationAdvisor") RetrievalAugmentationAdvisor retrievalAugmentationAdvisor) {
+                                        @Qualifier("webSearchRAGAdvisor") RetrievalAugmentationAdvisor retrievalAugmentationAdvisor) {
         MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
         return ChatClient.builder(chatModel)
                 .defaultAdvisors(List.of(new SimpleLoggerAdvisor(), memoryAdvisor, retrievalAugmentationAdvisor))
