@@ -12,7 +12,10 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class TimeTool {
 
-    @Tool(name = "currentTime", description = "get current time of user system")
+    //returnDirect=true means response will be shown directly to enduser,
+    // it will not go back to LLM for post processing
+    //@Tool(name = "currentTime", description = "get current time of user system")
+    @Tool(name = "currentTime", description = "get current time of user system", returnDirect = true)
     public String currentTime() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
