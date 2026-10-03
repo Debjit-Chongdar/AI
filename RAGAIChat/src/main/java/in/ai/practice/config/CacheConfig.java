@@ -84,7 +84,7 @@ public class CacheConfig {
     public ChatClient vectorChatClient(OllamaChatModel chatModel,
                                        @Qualifier("jdbcChatMemory") ChatMemory chatMemory,
                                        @Qualifier("ragAdvisor") RetrievalAugmentationAdvisor retrievalAugmentationAdvisor,
-                                       @Qualifier("redisSemanticCacheAdvisor") SemanticCacheAdvisor redisSemanticCacheAdvisor) {
+                                       @Qualifier("vectorSemanticCacheAdvisor") SemanticCacheAdvisor vectorSemanticCacheAdvisor) {
         MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
         return ChatClient.builder(chatModel)
                 .defaultAdvisors(
@@ -92,7 +92,7 @@ public class CacheConfig {
                                 new SimpleLoggerAdvisor(),
                                 memoryAdvisor,
                                 retrievalAugmentationAdvisor,
-                                redisSemanticCacheAdvisor
+                                vectorSemanticCacheAdvisor
                         )
                 )
                 .build();
