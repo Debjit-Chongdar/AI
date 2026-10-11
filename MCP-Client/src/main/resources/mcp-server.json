@@ -1,12 +1,5 @@
 {
   "mcpServers": {
-    "spring-ai-stdio-mcp": {
-      "command": "C:/Program Files/jdk-25.0.2/bin/java",
-      "args": [
-        "-jar",
-        "C:/Users/debji/Work_Space/AI/MCP-Server-stdio/target/MCP-Server-stdio-0.0.1-SNAPSHOT.jar"
-      ]
-    },
     "filesystem": {
       "command": "cmd",
       "args": [

@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "helpdesk-web-mcp": {
+      "command": "http",
+      "args": [
+        "http://localhost:8070/mcp"
+      ]
+    },
+    "spring-ai-stdio-mcp": {
+      "command": "C:/Program Files/jdk-25.0.2/bin/java",
+      "args": [
+        "-jar",
+        "C:/Users/debji/Work_Space/AI/MCP-Server-stdio/target/MCP-Server-stdio-0.0.1-SNAPSHOT.jar"
+      ]
+    },
+    "filesystem": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/debji/Downloads",
+        "C:/Users/debji/Desktop"
+      ]
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "<FineGainedToken>"
+      }
+    }
+  }
+}
