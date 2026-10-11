@@ -19,4 +19,11 @@ public class BaseChatController {
     public String chat(@RequestParam(name = "message") String message) {
         return chatClient.prompt().user(message).call().content();
     }
+
+    @GetMapping("/helpdesk/chat")
+    public String helpdeskChat(
+            @RequestParam(name = "message") String message,
+            @RequestParam(name="username") String username) {
+        return chatClient.prompt().user(message+"My username is "+username).call().content();
+    }
 }
